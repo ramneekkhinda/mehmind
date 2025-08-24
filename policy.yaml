@@ -1,0 +1,32 @@
+# MeshMind Policy Configuration
+
+frequency_caps:
+  contact.email:
+    window_hours: 48
+    max_count: 1
+  contact.sms:
+    window_hours: 24
+    max_count: 2
+  contact.call:
+    window_hours: 24
+    max_count: 1
+  calendar.book:
+    window_hours: 1
+    max_count: 1
+
+incidents:
+  suppress_outreach: false
+  suppressed_types: []
+
+approvals:
+  booking:
+    require_if:
+      - conflict_override: true
+  high_value:
+    require_if:
+      - amount_gt_1000: true
+
+limits:
+  replan_limit: 2
+  max_hold_ttl: 3600
+  default_hold_ttl: 120

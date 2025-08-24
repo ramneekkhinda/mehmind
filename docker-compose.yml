@@ -1,0 +1,66 @@
+services:
+  referee:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.referee
+    ports:
+      - "8080:8080"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://meshmind:meshmind@postgres/meshmind
+      - OTEL_SERVICE_NAME=meshmind-referee
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - MESHMIND_POLICY_FILE=/app/policy.yaml
+    volumes:
+      - ./policy.yaml:/app/policy.yaml:ro
+    depends_on:
+      - redis
+      - postgres
+      - jaeger
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=meshmind
+      - POSTGRES_USER=meshmind
+      - POSTGRES_PASSWORD=meshmind
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"  # UI
+      - "14268:14268"  # HTTP collector
+      - "14250:14250"  # gRPC collector
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    restart: unless-stopped
+
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    ports:
+      - "4317:4317"  # OTLP gRPC
+      - "4318:4318"  # OTLP HTTP
+    volumes:
+      - ./infra/docker/otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    command: ["--config", "/etc/otel-collector-config.yaml"]
+    depends_on:
+      - jaeger
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  postgres_data:
