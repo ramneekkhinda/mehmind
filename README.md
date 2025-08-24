@@ -17,6 +17,7 @@
 - **Policy-as-Code**: YAML-based configuration for frequency caps and incident suppression
 - **Graceful Degradation**: Continues operating even if referee service is unavailable
 - **Observability**: OpenTelemetry integration with Jaeger tracing
+- **🧾 Ghost-Run**: Dry-run simulator for cost estimation and conflict detection
 
 ## 📦 Installation
 
@@ -60,6 +61,11 @@ curl http://localhost:8080/healthz
 4. **Run demo:**
 ```bash
 python examples/yc_demo/demo.py
+```
+
+5. **Run Ghost-Run demo:**
+```bash
+python examples/ghost_run_demo.py
 ```
 
 ### Basic Usage
@@ -113,6 +119,27 @@ async def process_order(state):
     )
     
     return {"processed": True}
+```
+
+### Ghost-Run Simulation
+
+```python
+from meshmind.ghost import ghost_run, GhostConfig
+
+# Run simulation before deployment
+report = await ghost_run(
+    graph=my_workflow,
+    input_state={"ticket_id": "123", "customer_email": "user@example.com"},
+    budget_cap=10.0,
+    rpm_limit=60
+)
+
+print(f"Estimated cost: ${report.total_cost:.2f}")
+print(f"Conflicts detected: {len(report.conflicts)}")
+
+# Generate HTML report
+from meshmind.ghost.reports import save_html_report
+save_html_report(report, "simulation_report.html")
 ```
 
 ## 🏗️ Architecture
@@ -287,6 +314,69 @@ async def process_order(state):
     
     return {"order_id": state["order_id"], "payment_id": payment["id"]}
 ```
+
+## 🧾 Ghost-Run: Dry-Run Simulator
+
+Ghost-Run is a powerful simulation tool that lets you test LangGraph workflows before deployment. It provides:
+
+- **Cost Estimation**: Predict LLM and API costs before spending money
+- **Conflict Detection**: Identify resource locks, frequency caps, and policy violations
+- **Budget Analysis**: Ensure workflows stay within budget limits
+- **Detailed Reports**: Generate HTML and JSON reports for analysis
+
+### CLI Usage
+
+```bash
+# Run simulation on a workflow
+ghost-run run workflow.py input.json --budget 10.0 --rpm 60
+
+# Initialize configuration
+ghost-run init
+
+# Convert reports between formats
+ghost-run convert report.json --format html
+```
+
+### Python API
+
+```python
+from meshmind.ghost import ghost_run, GhostConfig
+
+# Basic simulation
+report = await ghost_run(
+    graph=my_workflow,
+    input_state={"user_id": "123"},
+    budget_cap=5.0
+)
+
+# Advanced configuration
+config = GhostConfig(
+    budget_cap=10.0,
+    rpm_limit=60,
+    fail_on_conflict=True,
+    max_steps=100
+)
+
+report = await ghost_run(
+    graph=my_workflow,
+    input_state=input_data,
+    ghost_config=config
+)
+
+# Analyze results
+print(f"Cost: ${report.total_cost:.3f}")
+print(f"Conflicts: {len(report.conflicts)}")
+print(f"Success: {not report.budget_exceeded}")
+```
+
+### Report Analysis
+
+Ghost-Run generates comprehensive reports with:
+
+- **Cost Breakdown**: Per-node cost analysis
+- **Conflict Details**: Resource locks, frequency caps, policy violations
+- **Performance Metrics**: Execution time, token usage, API calls
+- **Visual Reports**: Beautiful HTML reports with charts and summaries
 
 ## 🔍 Monitoring & Observability
 

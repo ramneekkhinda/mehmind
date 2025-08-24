@@ -47,6 +47,7 @@ dependencies = [
     "langgraph>=0.0.40",
     "langchain>=0.1.0",
     "deprecated>=1.2.0",
+    "click>=8.0.0",
 ]
 
 [project.optional-dependencies]
@@ -83,6 +84,7 @@ Repository = "https://github.com/meshmind/meshmind"
 
 [project.scripts]
 meshmind = "meshmind.cli:main"
+ghost-run = "meshmind.ghost.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

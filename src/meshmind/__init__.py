@@ -28,6 +28,7 @@ from .core.intents import preflight_intent
 from .core.budget import BudgetContext, call_model
 from .core.effects import http_post, email_send
 from .langgraph.decorators import wrap_node
+from .ghost import ghost_run, GhostSimulator, GhostReport
 from .utils.errors import (
     MeshMindError,
     PolicyDeniedError,
@@ -46,6 +47,11 @@ __all__ = [
     
     # LangGraph integration
     "wrap_node",
+    
+    # Ghost-Run functionality
+    "ghost_run",
+    "GhostSimulator", 
+    "GhostReport",
     
     # Error types
     "MeshMindError",
