@@ -1,5 +1,7 @@
 # MeshMind: Production Safety for LangGraph Agents
 
+[![Tests](https://github.com/ramneekkhinda/mehmind/workflows/Tests/badge.svg)](https://github.com/ramneekkhinda/mehmind/actions/workflows/tests.yml)
+[![Coverage](https://codecov.io/gh/ramneekkhinda/mehmind/branch/main/graph/badge.svg)](https://codecov.io/gh/ramneekkhinda/mehmind)
 [![PyPI version](https://badge.fury.io/py/meshmind.svg)](https://badge.fury.io/py/meshmind)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -377,6 +379,49 @@ Ghost-Run generates comprehensive reports with:
 - **Conflict Details**: Resource locks, frequency caps, policy violations
 - **Performance Metrics**: Execution time, token usage, API calls
 - **Visual Reports**: Beautiful HTML reports with charts and summaries
+
+## 🧪 Testing
+
+MeshMind includes a comprehensive test suite with 30+ tests covering all major functionality.
+
+### Running Tests
+
+```bash
+# Run all tests
+python -m pytest
+
+# Run with coverage
+python -m pytest --cov=meshmind --cov-report=term-missing
+
+# Run specific test categories
+python -m pytest -m unit          # 28 unit tests
+python -m pytest -m integration   # 2 integration tests
+
+# Run specific test files
+python -m pytest tests/test_ghost_run.py
+python -m pytest tests/test_ghost_reports.py
+```
+
+### Test Coverage
+
+- **Overall Coverage**: 42%
+- **Core Modules**: 100% (reports, init files)
+- **Ghost-Run**: 52% (simulator), 40% (decorators)
+- **CLI**: 22% (command-line interface)
+
+### CI/CD Integration
+
+Tests run automatically on:
+- Every push to `main` and `develop` branches
+- Every pull request
+- Daily scheduled runs
+- Manual workflow triggers
+
+The CI pipeline includes:
+- **Unit & Integration Tests**: pytest with coverage reporting
+- **Code Quality**: black, isort, flake8, mypy
+- **Security**: bandit, safety
+- **Multiple Python Versions**: 3.11, 3.12
 
 ## 🔍 Monitoring & Observability
 
