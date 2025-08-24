@@ -21,6 +21,7 @@ from meshmind.ghost.reports import (
 class TestHTMLReportGeneration:
     """Test HTML report generation."""
     
+    @pytest.mark.unit
     def test_generate_html_report_basic(self):
         """Test basic HTML report generation."""
         # Create a simple report
@@ -57,6 +58,7 @@ class TestHTMLReportGeneration:
         assert "node1" in html
         assert "node2" in html
     
+    @pytest.mark.unit
     def test_generate_html_report_with_conflicts(self):
         """Test HTML report generation with conflicts."""
         conflicts = [
@@ -110,6 +112,7 @@ class TestHTMLReportGeneration:
         assert "HIGH" in html
         assert "MEDIUM" in html
     
+    @pytest.mark.unit
     def test_generate_html_report_budget_exceeded(self):
         """Test HTML report generation with budget exceeded."""
         report = GhostReport(
@@ -133,6 +136,7 @@ class TestHTMLReportGeneration:
         # Should show failed status and budget exceeded
         assert "Budget Exceeded:</strong> Yes" in html
     
+    @pytest.mark.unit
     def test_generate_html_report_with_policy_violations(self):
         """Test HTML report generation with policy violations."""
         report = GhostReport(
@@ -161,6 +165,7 @@ class TestHTMLReportGeneration:
 class TestReportSaving:
     """Test report saving functionality."""
     
+    @pytest.mark.integration
     def test_save_html_report(self):
         """Test saving HTML report to file."""
         report = GhostReport(
@@ -199,6 +204,7 @@ class TestReportSaving:
             if os.path.exists(temp_path):
                 os.unlink(temp_path)
     
+    @pytest.mark.integration
     def test_save_json_report(self):
         """Test saving JSON report to file."""
         report = GhostReport(
@@ -241,6 +247,7 @@ class TestReportSaving:
 class TestReportDataStructures:
     """Test report data structure functionality."""
     
+    @pytest.mark.unit
     def test_conflict_report_serialization(self):
         """Test ConflictReport serialization."""
         conflict = ConflictReport(
@@ -259,6 +266,7 @@ class TestReportDataStructures:
         assert conflict_dict["conflict_type"] == "test_type"
         assert conflict_dict["metadata"]["key"] == "value"
     
+    @pytest.mark.unit
     def test_step_report_serialization(self):
         """Test StepReport serialization."""
         conflicts = [
@@ -284,6 +292,7 @@ class TestReportDataStructures:
         assert len(step_dict["conflicts"]) == 1
         assert step_dict["state_snapshot"]["key"] == "value"
     
+    @pytest.mark.unit
     def test_ghost_report_complete_serialization(self):
         """Test complete GhostReport serialization."""
         conflicts = [
@@ -329,6 +338,7 @@ class TestReportDataStructures:
 class TestReportAnalytics:
     """Test report analytics functionality."""
     
+    @pytest.mark.unit
     def test_cost_breakdown_complex(self):
         """Test cost breakdown with multiple nodes."""
         steps = [
@@ -363,6 +373,7 @@ class TestReportAnalytics:
         assert breakdown["send"] == 0.001
         assert len(breakdown) == 3
     
+    @pytest.mark.unit
     def test_conflicts_by_type_complex(self):
         """Test grouping conflicts by type with multiple types."""
         conflicts = [
@@ -403,6 +414,7 @@ class TestReportAnalytics:
         assert any(c.description == "Lock 2" for c in resource_locks)
         assert any(c.description == "Lock 3" for c in resource_locks)
     
+    @pytest.mark.unit
     def test_summary_with_various_states(self):
         """Test summary generation with various report states."""
         # Test successful report
