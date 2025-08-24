@@ -3,7 +3,6 @@ Ghost-Run Reports: Structured reporting and HTML generation for simulation resul
 """
 
 import json
-import time
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional

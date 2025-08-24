@@ -14,7 +14,7 @@ Key Features:
 
 Example:
     from meshmind.langgraph import wrap_node
-    
+
     @wrap_node(lambda s: ("email.send", {"resource": f"customer:{s['email']}"}))
     async def send_email(state):
         return await email_service.send(state["email"])

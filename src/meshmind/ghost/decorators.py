@@ -77,12 +77,12 @@ async def _ghost_call_model(prompt: str, budget_context, **kwargs):
 
     # Estimate tokens and cost
     estimated_tokens = _estimate_tokens(prompt, kwargs.get("max_tokens", 1000))
-    _estimated_cost = _estimate_llm_cost(
-        provider=kwargs.get("provider", "openai"),
-        model=kwargs.get("model", "gpt-3.5-turbo"),
-        input_tokens=estimated_tokens,
-        output_tokens=kwargs.get("max_tokens", 1000),
-    )
+    # _estimated_cost = _estimate_llm_cost(
+    #     provider=kwargs.get("provider", "openai"),
+    #     model=kwargs.get("model", "gpt-3.5-turbo"),
+    #     input_tokens=estimated_tokens,
+    #     output_tokens=kwargs.get("max_tokens", 1000),
+    # )
 
     # Simulate processing time
     await _ghost_sleep(0.1)
@@ -100,7 +100,7 @@ async def _ghost_http_post(url: str, data: Dict[str, Any], **kwargs):
     """Ghost implementation of http_post."""
 
     # Estimate cost (typically very low for API calls)
-    _estimated_cost = 0.001  # $0.001 per API call
+    # _estimated_cost = 0.001  # $0.001 per API call
 
     # Check for resource conflicts
     conflicts = []
@@ -128,7 +128,7 @@ async def _ghost_email_send(contact_id: str, body: str, subject: str, **kwargs):
     """Ghost implementation of email_send."""
 
     # Estimate cost (typically very low for emails)
-    _estimated_cost = 0.0001  # $0.0001 per email
+    # _estimated_cost = 0.0001  # $0.0001 per email
 
     # Check for frequency cap violations
     conflicts = []

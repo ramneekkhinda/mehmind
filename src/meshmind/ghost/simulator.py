@@ -267,9 +267,9 @@ class GhostSimulator:
         async with BudgetContext(
             usd_cap=self.config.budget_cap - ghost_state.budget_consumed,
             rpm=self.config.rpm_limit,
-        ) as _budget:
+        ) as _budget:  # noqa: F841
             # Intercept the node execution
-            _original_state = state.copy()
+            _original_state = state.copy()  # noqa: F841
 
             try:
                 # Execute node (this will be intercepted by our ghost decorators)

@@ -263,7 +263,7 @@ def create_intent_node(
             decision = await preflight_intent(intent_type, intent_payload)
 
             logger.debug(
-                f"Intent node preflight completed",
+                "Intent node preflight completed",
                 extra={
                     "structured_data": {
                         "operation": "intent_node_preflight",
@@ -284,7 +284,7 @@ def create_intent_node(
 
         except Exception as e:
             logger.error(
-                f"Intent node preflight failed",
+                "Intent node preflight failed",
                 extra={
                     "structured_data": {
                         "operation": "intent_node_error",
@@ -327,7 +327,7 @@ def create_conditional_edge(
         action = decision.get("action", "accept")
 
         logger.debug(
-            f"Conditional edge routing based on decision",
+            "Conditional edge routing based on decision",
             extra={
                 "structured_data": {
                     "operation": "conditional_edge",

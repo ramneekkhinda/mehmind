@@ -14,14 +14,14 @@ Key Features:
 
 Example:
     from meshmind.ghost import ghost_run
-    
+
     # Run simulation
     report = await ghost_run(
         graph=my_langgraph_workflow,
         input_state={"ticket_id": "123", "customer_email": "user@example.com"},
         budget_cap=10.0
     )
-    
+
     print(f"Estimated cost: ${report.total_cost:.2f}")
     print(f"Conflicts detected: {len(report.conflicts)}")
 """
