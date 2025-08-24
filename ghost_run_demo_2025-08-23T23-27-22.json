@@ -1,9 +1,9 @@
 {
-  "simulation_id": "ghost_f5ccaae0",
+  "simulation_id": "ghost_3a9743d1",
   "total_steps": 1,
   "total_cost": 0.0,
   "total_tokens": 0,
-  "execution_time_ms": 6.576061248779297,
+  "execution_time_ms": 5.594968795776367,
   "llm_calls": 0,
   "api_calls": 0,
   "effects_count": 0,
@@ -11,7 +11,7 @@
     {
       "step_number": 0,
       "node_name": "error",
-      "duration_ms": 0.0,
+      "duration_ms": 1.0035037994384766,
       "cost": 0.0,
       "tokens": 0,
       "conflicts": [],
@@ -30,5 +30,5 @@
     "subject": "Product not working",
     "description": "I purchased your product last week and it's not working properly. This is urgent as I need it for an important meeting tomorrow."
   },
-  "timestamp": "2025-08-23T23:26:37.553488"
+  "timestamp": "2025-08-23T23:27:22.657468"
 }
