@@ -4,6 +4,7 @@ MeshMind Idempotent Effects Module
 Idempotent HTTP and email operations with conflict detection.
 """
 
+import asyncio
 from typing import Any, Dict, Optional
 
 import httpx
@@ -59,7 +60,10 @@ async def http_post(
                 )
 
                 raise IdempotencyConflictError(
-                    message=f"HTTP POST already executed with idempotency key: {idempotency_key}",
+                    message=(
+                        f"HTTP POST already executed with idempotency key: "
+                        f"{idempotency_key}"
+                    ),
                     idempotency_key=idempotency_key,
                     resource_type="http_post",
                 )
@@ -100,7 +104,10 @@ async def http_post(
     except httpx.HTTPStatusError as e:
         if e.response.status_code == 409:
             raise IdempotencyConflictError(
-                message=f"HTTP POST already executed with idempotency key: {idempotency_key}",
+                message=(
+                    f"HTTP POST already executed with idempotency key: "
+                    f"{idempotency_key}"
+                ),
                 idempotency_key=idempotency_key,
                 resource_type="http_post",
             )
@@ -207,7 +214,3 @@ async def email_send(
             additional_data={"error": str(e)},
         )
         raise
-
-
-# Import asyncio for the async sleep
-import asyncio

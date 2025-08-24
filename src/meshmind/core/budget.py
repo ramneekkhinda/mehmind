@@ -4,6 +4,7 @@ MeshMind Budget Control Module
 Budget tracking and LLM call management with cost controls.
 """
 
+import asyncio
 import time
 import uuid
 from typing import Any, Dict, Optional
@@ -66,7 +67,8 @@ class BudgetContext:
         duration = time.time() - self.start_time
 
         logger.info(
-            f"Budget context ended: ${self.spent_usd:.2f} spent, {self.request_count} requests",
+            f"Budget context ended: ${self.spent_usd:.2f} spent, "
+            f"{self.request_count} requests",
             extra={
                 "structured_data": {
                     "operation": "budget_end",
@@ -102,7 +104,8 @@ class BudgetContext:
         duration = time.time() - self.start_time
 
         logger.info(
-            f"Budget context ended: ${self.spent_usd:.2f} spent, {self.request_count} requests",
+            f"Budget context ended: ${self.spent_usd:.2f} spent, "
+            f"{self.request_count} requests",
             extra={
                 "structured_data": {
                     "operation": "budget_end",
@@ -257,7 +260,3 @@ async def call_model(
 
     else:
         raise ValueError(f"Unsupported provider: {provider}")
-
-
-# Import asyncio for the async sleep
-import asyncio
