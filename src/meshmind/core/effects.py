@@ -4,8 +4,9 @@ MeshMind Idempotent Effects Module
 Idempotent HTTP and email operations with conflict detection.
 """
 
+from typing import Any, Dict, Optional
+
 import httpx
-from typing import Dict, Any, Optional
 
 from ..utils.errors import IdempotencyConflictError
 from ..utils.logging import get_logger, log_effect_operation
@@ -18,21 +19,21 @@ async def http_post(
     data: Dict[str, Any],
     idempotency_key: str,
     headers: Optional[Dict[str, str]] = None,
-    timeout: float = 30.0
+    timeout: float = 30.0,
 ) -> Dict[str, Any]:
     """
     Make an idempotent HTTP POST request.
-    
+
     Args:
         url: Target URL for the POST request
         data: Request payload
         idempotency_key: Unique key for idempotency
         headers: Optional additional headers
         timeout: Request timeout in seconds
-        
+
     Returns:
         Response data from the HTTP request
-        
+
     Raises:
         IdempotencyConflictError: When idempotency key conflicts
     """
@@ -40,17 +41,13 @@ async def http_post(
     request_headers = {
         "Content-Type": "application/json",
         "Idempotency-Key": idempotency_key,
-        **(headers or {})
+        **(headers or {}),
     }
-    
+
     try:
         async with httpx.AsyncClient(timeout=timeout) as client:
-            response = await client.post(
-                url,
-                json=data,
-                headers=request_headers
-            )
-            
+            response = await client.post(url, json=data, headers=request_headers)
+
             # Check for idempotency conflicts
             if response.status_code == 409:
                 log_effect_operation(
@@ -58,19 +55,19 @@ async def http_post(
                     effect_type="http_post",
                     resource=url,
                     idempotency_key=idempotency_key,
-                    success=False
+                    success=False,
                 )
-                
+
                 raise IdempotencyConflictError(
                     message=f"HTTP POST already executed with idempotency key: {idempotency_key}",
                     idempotency_key=idempotency_key,
-                    resource_type="http_post"
+                    resource_type="http_post",
                 )
-            
+
             response.raise_for_status()
-            
+
             result = response.json()
-            
+
             log_effect_operation(
                 logger=logger,
                 effect_type="http_post",
@@ -79,17 +76,17 @@ async def http_post(
                 success=True,
                 additional_data={
                     "status_code": response.status_code,
-                    "response_size": len(response.content)
-                }
+                    "response_size": len(response.content),
+                },
             )
-            
+
             return {
                 "success": True,
                 "status_code": response.status_code,
                 "data": result,
-                "idempotent": True
+                "idempotent": True,
             }
-            
+
     except httpx.RequestError as e:
         log_effect_operation(
             logger=logger,
@@ -97,7 +94,7 @@ async def http_post(
             resource=url,
             idempotency_key=idempotency_key,
             success=False,
-            additional_data={"error": str(e)}
+            additional_data={"error": str(e)},
         )
         raise Exception(f"HTTP POST request failed: {e}")
     except httpx.HTTPStatusError as e:
@@ -105,7 +102,7 @@ async def http_post(
             raise IdempotencyConflictError(
                 message=f"HTTP POST already executed with idempotency key: {idempotency_key}",
                 idempotency_key=idempotency_key,
-                resource_type="http_post"
+                resource_type="http_post",
             )
         else:
             log_effect_operation(
@@ -116,10 +113,12 @@ async def http_post(
                 success=False,
                 additional_data={
                     "status_code": e.response.status_code,
-                    "error": e.response.text
-                }
+                    "error": e.response.text,
+                },
             )
-            raise Exception(f"HTTP POST error {e.response.status_code}: {e.response.text}")
+            raise Exception(
+                f"HTTP POST error {e.response.status_code}: {e.response.text}"
+            )
 
 
 async def email_send(
@@ -129,11 +128,11 @@ async def email_send(
     subject: Optional[str] = None,
     from_email: Optional[str] = None,
     template: Optional[str] = None,
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
     Send an idempotent email.
-    
+
     Args:
         contact_id: Contact ID to send email to
         body: Email body content
@@ -142,20 +141,20 @@ async def email_send(
         from_email: From email address
         template: Email template name
         metadata: Additional metadata
-    
+
     Returns:
         Email send result
-        
+
     Raises:
         IdempotencyConflictError: If idempotency key conflicts
     """
     # Simulate email service call
     # In a real implementation, this would call an actual email service
-    
+
     try:
         # Simulate email service processing
         await asyncio.sleep(0.1)
-        
+
         # Check for idempotency conflicts (simulated)
         # In real implementation, this would check against email service
         if idempotency_key.startswith("conflict_"):
@@ -164,18 +163,18 @@ async def email_send(
                 effect_type="email_send",
                 resource=f"contact:{contact_id}",
                 idempotency_key=idempotency_key,
-                success=False
+                success=False,
             )
-            
+
             raise IdempotencyConflictError(
                 message=f"Email already sent with idempotency key: {idempotency_key}",
                 idempotency_key=idempotency_key,
-                resource_type="email"
+                resource_type="email",
             )
-        
+
         # Simulate successful email send
         email_id = f"email_{idempotency_key[:8]}"
-        
+
         log_effect_operation(
             logger=logger,
             effect_type="email_send",
@@ -185,19 +184,19 @@ async def email_send(
             additional_data={
                 "email_id": email_id,
                 "subject": subject,
-                "template": template
-            }
+                "template": template,
+            },
         )
-        
+
         return {
             "success": True,
             "email_id": email_id,
             "contact_id": contact_id,
             "idempotent": True,
             "subject": subject,
-            "template": template
+            "template": template,
         }
-        
+
     except Exception as e:
         log_effect_operation(
             logger=logger,
@@ -205,7 +204,7 @@ async def email_send(
             resource=f"contact:{contact_id}",
             idempotency_key=idempotency_key,
             success=False,
-            additional_data={"error": str(e)}
+            additional_data={"error": str(e)},
         )
         raise
 

@@ -4,15 +4,15 @@ Ghost-Run Reports: Structured reporting and HTML generation for simulation resul
 
 import json
 import time
-from typing import Dict, Any, List, Optional
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
 class ConflictReport:
     """Report of a detected conflict during simulation."""
-    
+
     conflict_type: str  # "resource_lock", "frequency_cap", "budget_exceeded", "policy_violation"
     resource: str
     node_name: str
@@ -26,7 +26,7 @@ class ConflictReport:
 @dataclass
 class StepReport:
     """Report for a single execution step."""
-    
+
     step_number: int
     node_name: str
     duration_ms: float
@@ -41,7 +41,7 @@ class StepReport:
 @dataclass
 class GhostReport:
     """Complete Ghost-Run simulation report."""
-    
+
     simulation_id: str
     total_steps: int
     total_cost: float
@@ -56,15 +56,15 @@ class GhostReport:
     budget_exceeded: bool
     input_state: Dict[str, Any]
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert report to dictionary for JSON serialization."""
         return asdict(self)
-    
+
     def to_json(self, indent: int = 2) -> str:
         """Convert report to JSON string."""
         return json.dumps(self.to_dict(), indent=indent, default=str)
-    
+
     def get_summary(self) -> Dict[str, Any]:
         """Get a summary of the simulation results."""
         return {
@@ -80,9 +80,9 @@ class GhostReport:
             "conflicts_count": len(self.conflicts),
             "policy_violations_count": len(self.policy_violations),
             "budget_exceeded": self.budget_exceeded,
-            "success": not self.budget_exceeded and len(self.conflicts) == 0
+            "success": not self.budget_exceeded and len(self.conflicts) == 0,
         }
-    
+
     def get_cost_breakdown(self) -> Dict[str, float]:
         """Get cost breakdown by step."""
         breakdown = {}
@@ -90,7 +90,7 @@ class GhostReport:
             if step.cost > 0:
                 breakdown[step.node_name] = breakdown.get(step.node_name, 0) + step.cost
         return breakdown
-    
+
     def get_conflicts_by_type(self) -> Dict[str, List[ConflictReport]]:
         """Group conflicts by type."""
         grouped = {}
@@ -104,15 +104,15 @@ class GhostReport:
 def generate_html_report(report: GhostReport, title: str = "Ghost-Run Report") -> str:
     """
     Generate an HTML report for the Ghost-Run simulation.
-    
+
     Args:
         report: GhostReport to convert to HTML
         title: Title for the HTML page
-        
+
     Returns:
         HTML string with formatted report
     """
-    
+
     # CSS styles
     css = """
     <style>
@@ -152,79 +152,118 @@ def generate_html_report(report: GhostReport, title: str = "Ghost-Run Report") -
         .badge.error { background: #f8d7da; color: #721c24; }
     </style>
     """
-    
+
     # Generate summary cards
     summary_cards = []
-    
+
     # Cost card
-    cost_color = "success" if report.total_cost <= 1.0 else "warning" if report.total_cost <= 5.0 else "error"
-    summary_cards.append(f"""
+    cost_color = (
+        "success"
+        if report.total_cost <= 1.0
+        else "warning"
+        if report.total_cost <= 5.0
+        else "error"
+    )
+    summary_cards.append(
+        f"""
         <div class="summary-card">
             <h3>Total Cost</h3>
             <div class="value {cost_color}">${report.total_cost:.2f}</div>
             <div class="unit">USD</div>
         </div>
-    """)
-    
+    """
+    )
+
     # Steps card
-    summary_cards.append(f"""
+    summary_cards.append(
+        f"""
         <div class="summary-card">
             <h3>Total Steps</h3>
             <div class="value">{report.total_steps}</div>
             <div class="unit">execution steps</div>
         </div>
-    """)
-    
+    """
+    )
+
     # LLM Calls card
-    summary_cards.append(f"""
+    summary_cards.append(
+        f"""
         <div class="summary-card">
             <h3>LLM Calls</h3>
             <div class="value">{report.llm_calls}</div>
             <div class="unit">API calls</div>
         </div>
-    """)
-    
+    """
+    )
+
     # Conflicts card
-    conflict_color = "success" if len(report.conflicts) == 0 else "warning" if len(report.conflicts) <= 2 else "error"
-    summary_cards.append(f"""
+    conflict_color = (
+        "success"
+        if len(report.conflicts) == 0
+        else "warning"
+        if len(report.conflicts) <= 2
+        else "error"
+    )
+    summary_cards.append(
+        f"""
         <div class="summary-card">
             <h3>Conflicts</h3>
             <div class="value {conflict_color}">{len(report.conflicts)}</div>
             <div class="unit">detected</div>
         </div>
-    """)
-    
+    """
+    )
+
     # Execution time card
-    summary_cards.append(f"""
+    summary_cards.append(
+        f"""
         <div class="summary-card">
             <h3>Execution Time</h3>
             <div class="value">{report.execution_time_ms:.0f}</div>
             <div class="unit">milliseconds</div>
         </div>
-    """)
-    
+    """
+    )
+
     # Status card
-    status = "success" if not report.budget_exceeded and len(report.conflicts) == 0 else "warning" if len(report.conflicts) <= 2 else "error"
-    status_text = "PASS" if status == "success" else "WARNINGS" if status == "warning" else "FAILED"
-    summary_cards.append(f"""
+    status = (
+        "success"
+        if not report.budget_exceeded and len(report.conflicts) == 0
+        else "warning"
+        if len(report.conflicts) <= 2
+        else "error"
+    )
+    status_text = (
+        "PASS"
+        if status == "success"
+        else "WARNINGS"
+        if status == "warning"
+        else "FAILED"
+    )
+    summary_cards.append(
+        f"""
         <div class="summary-card">
             <h3>Status</h3>
             <div class="value {status}">{status_text}</div>
             <div class="unit">simulation</div>
         </div>
-    """)
-    
+    """
+    )
+
     # Generate steps table
     steps_rows = []
     for step in report.steps:
         conflict_badges = ""
         if step.conflicts:
-            conflict_badges = " ".join([
-                f'<span class="badge {conflict.severity}">{conflict.conflict_type}</span>'
-                for conflict in step.conflicts
-            ])
-        
-        steps_rows.append(f"""
+            conflict_badges = " ".join(
+                [
+                    f'<span class="badge {conflict.severity}">{conflict.conflict_type}</span>'
+                    for conflict in step.conflicts
+                ]
+            )
+
+        steps_rows.append(
+            f"""
             <tr>
                 <td>{step.step_number}</td>
                 <td><strong>{step.node_name}</strong></td>
@@ -233,8 +272,9 @@ def generate_html_report(report: GhostReport, title: str = "Ghost-Run Report") -
                 <td>{step.duration_ms:.1f}ms</td>
                 <td>{conflict_badges}</td>
             </tr>
-        """)
-    
+        """
+        )
+
     # Generate conflicts section
     conflicts_html = ""
     if report.conflicts:
@@ -252,14 +292,16 @@ def generate_html_report(report: GhostReport, title: str = "Ghost-Run Report") -
                 </div>
             """
     else:
-        conflicts_html = '<p class="success">✅ No conflicts detected during simulation.</p>'
-    
+        conflicts_html = (
+            '<p class="success">✅ No conflicts detected during simulation.</p>'
+        )
+
     # Generate cost breakdown
     cost_breakdown = report.get_cost_breakdown()
     cost_items = []
     for node, cost in cost_breakdown.items():
         cost_items.append(f'<span class="cost-item">{node}: ${cost:.3f}</span>')
-    
+
     # Generate policy violations
     policy_html = ""
     if report.policy_violations:
@@ -267,7 +309,7 @@ def generate_html_report(report: GhostReport, title: str = "Ghost-Run Report") -
             policy_html += f'<li class="error">{violation}</li>'
     else:
         policy_html = '<li class="success">✅ No policy violations detected.</li>'
-    
+
     # Main HTML template
     html = f"""
     <!DOCTYPE html>
@@ -354,31 +396,33 @@ def generate_html_report(report: GhostReport, title: str = "Ghost-Run Report") -
     </body>
     </html>
     """
-    
+
     return html
 
 
-def save_html_report(report: GhostReport, filepath: str, title: str = "Ghost-Run Report") -> None:
+def save_html_report(
+    report: GhostReport, filepath: str, title: str = "Ghost-Run Report"
+) -> None:
     """
     Save HTML report to a file.
-    
+
     Args:
         report: GhostReport to save
         filepath: Path to save the HTML file
         title: Title for the HTML page
     """
     html_content = generate_html_report(report, title)
-    with open(filepath, 'w', encoding='utf-8') as f:
+    with open(filepath, "w", encoding="utf-8") as f:
         f.write(html_content)
 
 
 def save_json_report(report: GhostReport, filepath: str) -> None:
     """
     Save JSON report to a file.
-    
+
     Args:
         report: GhostReport to save
         filepath: Path to save the JSON file
     """
-    with open(filepath, 'w', encoding='utf-8') as f:
+    with open(filepath, "w", encoding="utf-8") as f:
         f.write(report.to_json())

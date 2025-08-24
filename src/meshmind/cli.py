@@ -16,7 +16,7 @@ def cli():
 def status():
     """Check MeshMind services status."""
     click.echo("🔍 Checking MeshMind services...")
-    
+
     # This would check the referee service, database, etc.
     # For now, just show a placeholder
     click.echo("✅ MeshMind services are running")
@@ -30,11 +30,12 @@ def status():
 def demo():
     """Run the MeshMind demo."""
     click.echo("🎯 Running MeshMind demo...")
-    
+
     # Import and run the demo
     import asyncio
+
     from examples.yc_demo.demo import main as run_demo
-    
+
     asyncio.run(run_demo())
 
 
@@ -42,11 +43,12 @@ def demo():
 def ghost_demo():
     """Run the Ghost-Run demo."""
     click.echo("🧾 Running Ghost-Run demo...")
-    
+
     # Import and run the ghost demo
     import asyncio
+
     from examples.ghost_run_demo import main as run_ghost_demo
-    
+
     asyncio.run(run_ghost_demo())
 
 
@@ -55,5 +57,5 @@ def main():
     cli()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

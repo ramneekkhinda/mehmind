@@ -4,23 +4,23 @@ MeshMind Error Types
 Custom exception classes for MeshMind operations with structured error information.
 """
 
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 
 class MeshMindError(Exception):
     """Base exception for all MeshMind errors."""
-    
+
     def __init__(
-        self, 
-        message: str, 
+        self,
+        message: str,
         error_code: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None
+        details: Optional[Dict[str, Any]] = None,
     ):
         super().__init__(message)
         self.message = message
         self.error_code = error_code
         self.details = details or {}
-    
+
     def __str__(self) -> str:
         if self.error_code:
             return f"[{self.error_code}] {self.message}"
@@ -29,14 +29,14 @@ class MeshMindError(Exception):
 
 class PolicyDeniedError(MeshMindError):
     """Raised when an intent is denied by policy enforcement."""
-    
+
     def __init__(
-        self, 
+        self,
         message: str,
         intent_type: Optional[str] = None,
         resource: Optional[str] = None,
         reason: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None
+        details: Optional[Dict[str, Any]] = None,
     ):
         super().__init__(message, "POLICY_DENIED", details)
         self.intent_type = intent_type
@@ -46,13 +46,13 @@ class PolicyDeniedError(MeshMindError):
 
 class RefereeConnectionError(MeshMindError):
     """Raised when unable to connect to the referee service."""
-    
+
     def __init__(
-        self, 
+        self,
         message: str,
         base_url: Optional[str] = None,
         timeout: Optional[float] = None,
-        details: Optional[Dict[str, Any]] = None
+        details: Optional[Dict[str, Any]] = None,
     ):
         super().__init__(message, "REFEREE_CONNECTION_ERROR", details)
         self.base_url = base_url
@@ -61,13 +61,13 @@ class RefereeConnectionError(MeshMindError):
 
 class IdempotencyConflictError(MeshMindError):
     """Raised when an idempotency key conflict is detected."""
-    
+
     def __init__(
-        self, 
+        self,
         message: str,
         idempotency_key: Optional[str] = None,
         resource_type: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None
+        details: Optional[Dict[str, Any]] = None,
     ):
         super().__init__(message, "IDEMPOTENCY_CONFLICT", details)
         self.idempotency_key = idempotency_key
@@ -76,14 +76,14 @@ class IdempotencyConflictError(MeshMindError):
 
 class BudgetExceededError(MeshMindError):
     """Raised when budget limits are exceeded."""
-    
+
     def __init__(
-        self, 
+        self,
         message: str,
         budget_id: Optional[str] = None,
         spent_amount: Optional[float] = None,
         limit_amount: Optional[float] = None,
-        details: Optional[Dict[str, Any]] = None
+        details: Optional[Dict[str, Any]] = None,
     ):
         super().__init__(message, "BUDGET_EXCEEDED", details)
         self.budget_id = budget_id
@@ -93,13 +93,13 @@ class BudgetExceededError(MeshMindError):
 
 class HoldConflictError(MeshMindError):
     """Raised when a hold request conflicts with existing holds."""
-    
+
     def __init__(
-        self, 
+        self,
         message: str,
         resource: Optional[str] = None,
         existing_hold_id: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None
+        details: Optional[Dict[str, Any]] = None,
     ):
         super().__init__(message, "HOLD_CONFLICT", details)
         self.resource = resource
@@ -108,13 +108,13 @@ class HoldConflictError(MeshMindError):
 
 class LockAcquisitionError(MeshMindError):
     """Raised when unable to acquire a resource lock."""
-    
+
     def __init__(
-        self, 
+        self,
         message: str,
         resource: Optional[str] = None,
         ttl_seconds: Optional[int] = None,
-        details: Optional[Dict[str, Any]] = None
+        details: Optional[Dict[str, Any]] = None,
     ):
         super().__init__(message, "LOCK_ACQUISITION_ERROR", details)
         self.resource = resource
